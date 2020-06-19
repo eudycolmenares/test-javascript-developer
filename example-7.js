@@ -20,14 +20,28 @@ console.log('---- EXAMPLE 7 part 7 --- ', 'Put here your function', patchCompany
 console.log('---- EXAMPLE 7 part 8 --- ', 'Put here your function', putCompanyUserId(0, 3));
 console.log('---- EXAMPLE 7 part 9 --- ', 'Put here your function', transferUser(0, 1, 4));
 
+/**
+ * Retorna nombre de compañia
+ * @param {integer} id
+ * @return {string}
+ */
 function getNameIdCompany(id) {
   return (companies.find((company) => company.id === id)) ? companies.find((company) => company.id === id).name : null;
 }
-// 2
+/**
+ * Elimina compañia del arreglo
+ * @param {integer} id
+ * @return {array}
+ */
 function getCompaniesWithOut(id) {
-  return companies.filter((company) => company.id !== id);
+  const ret = JSON.parse(JSON.stringify(companies));
+  return ret.filter((company) => company.id !== id);
 }
-// 3
+/**
+ * Realiza un path a cada atributo de la compañia diferente user
+ * @param {integer} idCompany
+ * @return {object}
+ */
 function pathComapnies(idCompany) {
   const ret = JSON.parse(JSON.stringify(companies));
   const companySelected = ret.find((company) => company.id === idCompany);
@@ -41,13 +55,19 @@ function pathComapnies(idCompany) {
       };
       isFetch(`/company/${idCompany}/${key}`, 'PATCH', data).then((resp) => {
         companySelected[key] = resp;
+        return companySelected;
       });
     }
   }
 }
-// 4
-function addUserToCompany(id, nUser) {
-  const compSelected = companies.find((company) => company.id === id);
+/**
+ * Agrega usuario a compañia en especifica
+ * @param {integer} idCompany
+ * @param {*} nUser
+ * @return {object}
+ */
+function addUserToCompany(idCompany, nUser) {
+  const compSelected = companies.find((company) => company.id === idCompany);
   if (!compSelected) {
     return null;
   }
@@ -55,7 +75,11 @@ function addUserToCompany(id, nUser) {
   compSelected.usersLength = compSelected.users.length;
   return compSelected;
 }
-// 5
+/**
+ * Actualiza los campos de una compañia
+ * @param {integer} idCompany
+ * @return {object}
+ */
 function putInCompany(idCompany) {
   const compSelected = companies.find((company) => company.id === idCompany);
   if (!compSelected) {
@@ -70,7 +94,12 @@ function putInCompany(idCompany) {
     return resp;
   });
 }
-// 6
+/**
+ * Elimina a un usuario de la compañia
+ * @param {integer} idCompany
+ * @param {integer} idUser
+ * @return {object}
+ */
 function delUserFromCompany(idCompany, idUser) {
   const companySelected = companies.find((company) => company.id === idCompany);
   if (!companySelected) {
@@ -80,7 +109,12 @@ function delUserFromCompany(idCompany, idUser) {
   companySelected.usersLength = companySelected.users.length;
   return companySelected;
 }
-// 7
+/**
+ * Realiza un path a los atributos de un usuario de una compañia
+ * @param {integer} idCompany
+ * @param {integer} idUser
+ * @return {object}
+ */
 function patchCompanyUserId(idCompany, idUser) {
   const companySelected = companies.find((company) => company.id === idCompany);
   if (!companySelected) {
@@ -100,7 +134,12 @@ function patchCompanyUserId(idCompany, idUser) {
     return resp;
   });
 }
-// 8
+/**
+ * Permite actualizar los atributos de una usuario de una compañia
+ * @param {integer} idCompany
+ * @param {integer} idUser
+ * @return {object}
+ */
 function putCompanyUserId(idCompany, idUser) {
   const companySelected = companies.find((company) => company.id === idCompany);
   if (!companySelected) {
@@ -120,24 +159,37 @@ function putCompanyUserId(idCompany, idUser) {
     return resp;
   });
 }
-// 9
-function transferUser(idA, idB, idUser) {
-  const companyA = companies.find((company) => company.id === idA);
-  const companyB = companies.find((company) => company.id === idB);
-  if (!companyA || !companyB) {
+/**
+ * Cambia a un usuario de compañia
+ * @param {integer} idSource
+ * @param {integer} idDestiny
+ * @param {integer} idUser
+ * @return {object}
+ */
+function transferUser(idSource, idDestiny, idUser) {
+  const ret = JSON.parse(JSON.stringify(companies));
+  const companySource = ret.find((company) => company.id === idSource);
+  const companyDestiny = ret.find((company) => company.id === idDestiny);
+  if (!companySource || !companyDestiny) {
     return null;
   }
-  const userSelected = companyA.users.find((user) => user.id === idUser);
+  const userSelected = companySource.users.find((user) => user.id === idUser);
   if (!userSelected) {
     return null;
   }
-  companyB.users.push(userSelected);
-  companyB.usersLength = companyB.users.length;
-  companyA.users = companyA.users.filter((user) => user.id !== idUser);
-  companyA.usersLength = companyA.users.length;
-  return companies;
+  companyDestiny.users.push(userSelected);
+  companyDestiny.usersLength = companyDestiny.users.length;
+  companySource.users = companySource.users.filter((user) => user.id !== idUser);
+  companySource.usersLength = companySource.users.length;
+  return ret;
 }
-//
+/**
+ * Permite realizar un request
+ * @param {string} url
+ * @param {string} method
+ * @param {object | null} data
+ * @return {Promise}
+ */
 function isFetch(url, method, data=null) {
   const header = {
     method: method,
@@ -150,7 +202,6 @@ function isFetch(url, method, data=null) {
   }
   return fetch(url, header);
 }
-
 
 // -----------------------------------------------------------------------------
 // INSTRUCCIONES EN ESPAÑOL
